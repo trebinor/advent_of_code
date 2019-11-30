@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "aoc2023"
+version = "0.1.0"
+description = ""
+authors = ["trebinor <trebinor@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+regex = "^2023.10.3"
+numpy = "^1.26.2"
+black = "^23.11.0"
+termcolor = "^2.4.0"
+z3-solver = "^4.12.4.0"
+networkx = "^3.2.1"
+scikit-spatial = "^7.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
