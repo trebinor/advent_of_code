@@ -203,9 +203,9 @@ pub fn steps_to_repeat(v: &[Position]) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use day12::generator;
-    use day12::steps_to_repeat;
-    use day12::total_energy_all_planets;
+    use crate::day12::generator;
+    use crate::day12::steps_to_repeat;
+    use crate::day12::total_energy_all_planets;
     use std::fs;
     const ANSWER_12A: u64 = 9139;
     const ANSWER_12B: u64 = 420_788_524_631_496;

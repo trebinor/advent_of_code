@@ -81,8 +81,8 @@ pub fn solution_22b(input: &str) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use day22::solution_22a;
-    use day22::solution_22b;
+    use crate::day22::solution_22a;
+    use crate::day22::solution_22b;
     use std::fs;
     const ANSWER_22A: u64 = 2939;
     const ANSWER_22B: u64 = 45_347_150_615_590;

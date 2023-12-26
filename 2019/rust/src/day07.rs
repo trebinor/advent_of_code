@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 use regex::Regex;
 
 #[aoc(day07, part1, original)]
@@ -110,8 +110,8 @@ pub fn original_7b(input: &str) -> i64 {
 
 #[cfg(test)]
 mod tests {
-    use day07::original_7a;
-    use day07::original_7b;
+    use crate::day07::original_7a;
+    use crate::day07::original_7b;
     use std::fs;
     const ANSWER_7A: i64 = 437_860;
     const ANSWER_7B: i64 = 49_810_599;

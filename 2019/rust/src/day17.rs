@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 use std::collections::VecDeque;
 
 #[aoc(day17, part1)]
@@ -173,8 +173,8 @@ pub fn solution_17b(input: &str) -> i64 {
 
 #[cfg(test)]
 mod tests {
-    use day17::solution_17a;
-    use day17::solution_17b;
+    use crate::day17::solution_17a;
+    use crate::day17::solution_17b;
     use std::fs;
     const ANSWER_17A: u32 = 9544;
     const ANSWER_17B: i64 = 1_499_679;

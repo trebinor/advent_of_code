@@ -2,6 +2,7 @@
 name = "aoc_2019"
 version = "0.1.0"
 authors = ["Matt Smith <trebinor@users.noreply.github.com>"]
+edition = "2021"
 
 [lib]
 bench = false

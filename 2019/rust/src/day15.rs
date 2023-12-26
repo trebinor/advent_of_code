@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 use rand::prelude::*;
 
 const GRID_X: usize = 100;
@@ -379,8 +379,8 @@ pub fn original_15b(_input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day15::original_15a;
-    use day15::original_15b;
+    use crate::day15::original_15a;
+    use crate::day15::original_15b;
     use std::fs;
     const ANSWER_15A: u32 = 204;
     const ANSWER_15B: u32 = 340;

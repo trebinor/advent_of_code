@@ -59,8 +59,8 @@ pub fn revised_1b(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day01::original_1a;
-    use day01::original_1b;
+    use crate::day01::original_1a;
+    use crate::day01::original_1b;
     use std::fs;
     const ANSWER_1A: i32 = 3_369_286;
     const ANSWER_1B: i32 = 5_051_054;

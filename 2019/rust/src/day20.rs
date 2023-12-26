@@ -218,9 +218,9 @@ pub fn shortest_layered_portal_path(input: &Maze) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use day20::generator;
-    use day20::shortest_layered_portal_path;
-    use day20::shortest_portal_path;
+    use crate::day20::generator;
+    use crate::day20::shortest_layered_portal_path;
+    use crate::day20::shortest_portal_path;
     use std::fs;
     const ANSWER_20A: usize = 464;
     const ANSWER_20B: usize = 5802;

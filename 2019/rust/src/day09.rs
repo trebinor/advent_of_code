@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 
 #[aoc(day09, part1, original)]
 pub fn original_9a(input: &str) -> i64 {
@@ -30,8 +30,8 @@ pub fn original_9b(input: &str) -> i64 {
 
 #[cfg(test)]
 mod tests {
-    use day09::original_9a;
-    use day09::original_9b;
+    use crate::day09::original_9a;
+    use crate::day09::original_9b;
     use std::fs;
     const ANSWER_9A: i64 = 2_932_210_790;
     const ANSWER_9B: i64 = 73144;

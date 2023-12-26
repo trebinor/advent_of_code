@@ -21,7 +21,7 @@ impl Point {
 }
 
 trait PointAnalysis {
-    fn find_best_point(&mut self, &[Point]) -> Point;
+    fn find_best_point(&mut self, _: &[Point]) -> Point;
 }
 
 impl PointAnalysis for AsteroidSightMap {
@@ -153,12 +153,12 @@ pub fn math_on_200th_asteroid(asteroid_field: &[Point]) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day10::generator;
-    use day10::math_on_200th_asteroid;
-    use day10::visible_asteroids;
-    use day10::AsteroidSightMap;
-    use day10::Point;
-    use day10::PointAnalysis;
+    use crate::day10::generator;
+    use crate::day10::math_on_200th_asteroid;
+    use crate::day10::visible_asteroids;
+    use crate::day10::AsteroidSightMap;
+    use crate::day10::Point;
+    use crate::day10::PointAnalysis;
     use std::fs;
     const UNIT_INPUT_10A_1: &str = r"......#.#.
 #..#.#....

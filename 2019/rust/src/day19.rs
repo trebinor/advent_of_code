@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 
 #[aoc(day19, part1)]
 pub fn solution_19a(input: &str) -> usize {
@@ -125,8 +125,8 @@ pub fn solution_19b(input: &str) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use day19::solution_19a;
-    use day19::solution_19b;
+    use crate::day19::solution_19a;
+    use crate::day19::solution_19b;
     use std::fs;
     const ANSWER_19A: usize = 226;
     const ANSWER_19B: usize = 7900946;

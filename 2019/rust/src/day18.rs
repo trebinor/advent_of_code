@@ -159,9 +159,9 @@ pub fn shortest_path_with_quadbots(input: &Maze) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use day18::generator;
-    use day18::shortest_path;
-    use day18::shortest_path_with_quadbots;
+    use crate::day18::generator;
+    use crate::day18::shortest_path;
+    use crate::day18::shortest_path_with_quadbots;
     use std::fs;
     const ANSWER_18A: usize = 4118;
     const ANSWER_18B: usize = 1828;

@@ -179,8 +179,8 @@ fn walk_wires(i: &mut GridPoint, wires: &mut Vec<&str>) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use day03::original_3a;
-    use day03::original_3b;
+    use crate::day03::original_3a;
+    use crate::day03::original_3b;
     use std::fs;
     const ANSWER_3A: u32 = 557;
     const ANSWER_3B: u32 = 56410;

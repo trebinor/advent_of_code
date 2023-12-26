@@ -100,8 +100,8 @@ fn layer_pixel(old: PixelColor, new: PixelColor) -> PixelColor {
 
 #[cfg(test)]
 mod tests {
-    use day08::original_8a;
-    use day08::original_8b;
+    use crate::day08::original_8a;
+    use crate::day08::original_8b;
     use std::fs;
     const ANSWER_8A: u32 = 1064;
     const ANSWER_8B: &str = "PFCAK";

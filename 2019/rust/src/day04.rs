@@ -108,10 +108,10 @@ pub fn parsed_4b(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day04::original_4a;
-    use day04::original_4b;
-    use day04::parsed_4a;
-    use day04::parsed_4b;
+    use crate::day04::original_4a;
+    use crate::day04::original_4b;
+    use crate::day04::parsed_4a;
+    use crate::day04::parsed_4b;
     use std::fs;
     const ANSWER_4A: u32 = 921;
     const ANSWER_4B: u32 = 603;

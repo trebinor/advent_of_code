@@ -323,10 +323,10 @@ fn total_bugs_n_iterations(grid: &GridLevel, n: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use day24::biodiversity_of_first_repeated_state;
-    use day24::generator;
-    use day24::total_bugs_200_iterations;
-    use day24::total_bugs_n_iterations;
+    use crate::day24::biodiversity_of_first_repeated_state;
+    use crate::day24::generator;
+    use crate::day24::total_bugs_200_iterations;
+    use crate::day24::total_bugs_n_iterations;
     use std::fs;
     const ANSWER_24A: usize = 1_151_290;
     const ANSWER_24B: usize = 1953;

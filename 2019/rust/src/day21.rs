@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 use itertools::Itertools;
 
 fn deploy(springscript: &str, icc_program: Vec<i64>) -> String {
@@ -128,8 +128,8 @@ pub fn solution_21b(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day21::solution_21a;
-    use day21::solution_21b;
+    use crate::day21::solution_21a;
+    use crate::day21::solution_21b;
     use std::fs;
     const ANSWER_21A: u32 = 19_349_530;
     const ANSWER_21B: u32 = 1_142_805_439;

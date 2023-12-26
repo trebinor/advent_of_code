@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 
 #[aoc(day05, part1, original)]
 pub fn original_5a(input: &str) -> String {
@@ -227,10 +227,10 @@ pub fn icc_5b(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use day05::icc_5a;
-    use day05::icc_5b;
-    use day05::original_5a;
-    use day05::original_5b;
+    use crate::day05::icc_5a;
+    use crate::day05::icc_5b;
+    use crate::day05::original_5a;
+    use crate::day05::original_5b;
     use std::fs;
     const ANSWER_5A: &str = "16489636";
     const ANSWER_5B: &str = "9386583";

@@ -65,8 +65,8 @@ pub fn solution_16b(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use day16::solution_16a;
-    use day16::solution_16b;
+    use crate::day16::solution_16a;
+    use crate::day16::solution_16b;
     use std::fs;
     const ANSWER_16A: &str = "27831665";
     const ANSWER_16B: &str = "36265589";

@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 const GRID_X: usize = 30000;
 const GRID_Y: usize = 30000;
 
@@ -151,9 +151,9 @@ fn paint_panels(v: &[i64], show_paint: bool, initial_color: PanelColor) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day11::generator;
-    use day11::paint_panels_start_black;
-    use day11::paint_panels_start_white;
+    use crate::day11::generator;
+    use crate::day11::paint_panels_start_black;
+    use crate::day11::paint_panels_start_white;
     use std::fs;
     const ANSWER_11A: u32 = 2088;
     const ANSWER_11B: u32 = 249;

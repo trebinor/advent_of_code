@@ -1,4 +1,4 @@
-use icc::IntCodeComputer;
+use crate::icc::IntCodeComputer;
 
 #[derive(PartialEq, Debug)]
 enum Tile {
@@ -103,8 +103,8 @@ pub fn original_13b(input: &str) -> i64 {
 
 #[cfg(test)]
 mod tests {
-    use day13::original_13a;
-    use day13::original_13b;
+    use crate::day13::original_13a;
+    use crate::day13::original_13b;
     use std::fs;
     const ANSWER_13A: i64 = 427;
     const ANSWER_13B: i64 = 21426;

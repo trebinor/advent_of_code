@@ -60,8 +60,8 @@ pub fn original_2b(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day02::original_2a;
-    use day02::original_2b;
+    use crate::day02::original_2a;
+    use crate::day02::original_2b;
     use std::fs;
     const ANSWER_2A: u32 = 5_866_714;
     const ANSWER_2B: u32 = 5208;

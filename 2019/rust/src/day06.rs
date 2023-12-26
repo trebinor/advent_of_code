@@ -52,8 +52,8 @@ pub fn original_6b(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use day06::original_6a;
-    use day06::original_6b;
+    use crate::day06::original_6a;
+    use crate::day06::original_6b;
     use std::fs;
     const ANSWER_6A: u32 = 147_223;
     const ANSWER_6B: u32 = 340;

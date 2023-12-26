@@ -118,9 +118,9 @@ pub fn solution_14b(recipes: &[Recipe]) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use day14::generate_recipes;
-    use day14::solution_14a;
-    use day14::solution_14b;
+    use crate::day14::generate_recipes;
+    use crate::day14::solution_14a;
+    use crate::day14::solution_14b;
     use std::fs;
     const ANSWER_14A: u64 = 443_537;
     const ANSWER_14B: u64 = 2_910_558;
