@@ -1,7 +1,7 @@
 type Maze = Vec<Vec<char>>;
 
 #[allow(dead_code)]
-fn display(maze: Maze) {
+fn display(maze: &Maze) {
     for (j, y) in maze.iter().enumerate() {
         for (i, _x) in y.iter().enumerate() {
             print!("{}", maze[j][i]);
@@ -25,6 +25,10 @@ pub fn generator(input: &str) -> Maze {
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct Point(i8, i8, u32);
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct Location(i8, i8);
+
 impl Point {
     fn key_present(&self, key: char) -> bool {
         self.2 & (1 << (key as u8 - 97u8)) != 0
@@ -65,6 +69,24 @@ impl Point {
     }
 }
 
+impl Location {
+    fn successors_pass_locked_doors(&self, input: &Maze) -> Vec<Location> {
+        let &Location(x, y) = self;
+        let mut path = Vec::new();
+        for m in [(0, 1), (1, 0), (0, -1), (-1, 0)].iter() {
+            let i: i8 = x + m.0;
+            let j: i8 = y + m.1;
+            match input[j as usize][i as usize] {
+                '#' => continue,
+                '@' => continue,
+                _ => {}
+            }
+            path.push(Location(i, j));
+        }
+        path
+    }
+}
+
 #[aoc(day18, part1)]
 pub fn shortest_path(input: &Maze) -> usize {
     let mut goal = Point(0, 0, 0);
@@ -85,7 +107,7 @@ pub fn shortest_path(input: &Maze) -> usize {
     let origin = Point(origin_x, origin_y, 0);
     let shortest_path =
         pathfinding::directed::bfs::bfs(&origin, |p| p.successors(input), |p| p.2 == goal.2);
-    shortest_path.unwrap().len() - 1 // off by 1 for some reason
+    shortest_path.unwrap().len() - 1 // subtract starting point which is included in path
 }
 
 #[aoc(day18, part2)]
@@ -112,8 +134,9 @@ pub fn shortest_path_with_quadbots(input: &Maze) -> usize {
             }
         }
     }
-    let h = input.len();
-    let w = input[0].len();
+    // println!("origin: {} {}", origin_x, origin_y);
+    // let h = input.len();
+    // let w = input[0].len();
     let mut bots: [Point; 4] = [Point(0, 0, 0); 4];
     for (idx, o) in [(-1, -1), (1, -1), (1, 1), (-1, 1)].iter().enumerate() {
         let i = origin_x as i8 + o.0;
@@ -121,32 +144,32 @@ pub fn shortest_path_with_quadbots(input: &Maze) -> usize {
         bots[idx] = Point(i, j, 0);
         quadmaze[j as usize][i as usize] = '@'
     }
-    for k in key_points {
-        if k.0 < (w / 2) as i8 {
-            if k.1 < (h / 2) as i8 {
-                bots[1].2 |= k.2;
-                bots[2].2 |= k.2;
-                bots[3].2 |= k.2;
-            } else {
-                bots[0].2 |= k.2;
-                bots[1].2 |= k.2;
-                bots[2].2 |= k.2;
+    // println!("key_points = {:?}", key_points);
+    for (bi, b) in bots.clone().iter().enumerate() {
+        let bot_location = Location(b.0, b.1);
+        // println!("Bot {} at {} {}", bi, b.0, b.1);
+        let path = pathfinding::directed::bfs::bfs_reach(bot_location, |l| {
+            l.successors_pass_locked_doors(&quadmaze)
+        })
+        .collect::<Vec<_>>();
+        for k in key_points.clone() {
+            if path.iter().any(|l| l.0 == k.0 && l.1 == k.1) {
+                for j in 0..bots.len() {
+                    if bi == j {
+                        continue;
+                    }
+                    bots[j].2 |= k.2
+                }
             }
-        } else if k.1 < (h / 2) as i8 {
-            bots[0].2 |= k.2;
-            bots[2].2 |= k.2;
-            bots[3].2 |= k.2;
-        } else {
-            bots[0].2 |= k.2;
-            bots[1].2 |= k.2;
-            bots[3].2 |= k.2;
         }
     }
+    // println!("bots: = {:?}", bots);
     for o in [(0, 0), (-1, 0), (0, 1), (1, 0), (0, -1)].iter() {
         let i = origin_x as i8 + o.0;
         let j = origin_y as i8 + o.1;
         quadmaze[j as usize][i as usize] = '#'
     }
+    // display(&quadmaze);
     let mut paths: Vec<Vec<Point>> = Vec::new();
     for b in bots.iter() {
         paths.push(
@@ -204,31 +227,31 @@ mod tests {
 ########################";
     const UNIT_INPUT_18B_1: &str = r"#######
 #a.#Cd#
-## # ##
+##.#.##
 ###@###
-## # ##
+##.#.##
 #cB#Ab#
 #######";
     const UNIT_INPUT_18B_2: &str = r"###############
 #d.ABC.#.....a#
-###### # ######
+######.#.######
 #######@#######
-###### # ######
+######.#.######
 #b.....#.....c#
 ###############";
     const UNIT_INPUT_18B_3: &str = r"#############
 #DcBa.#.GhKl#
-#.### # #I###
+#.###.#.#I###
 #e#d##@##j#k#
-###C# # ###J#
+###C#.#.###J#
 #fEbA.#.FgHi#
 #############";
     const UNIT_INPUT_18B_4: &str = r"#############
 #g#f.D#..h#l#
 #F###e#E###.#
-#dCba # BcIJ#
+#dCba.#.BcIJ#
 ######@######
-#nK.L # G...#
+#nK.L.#.G...#
 #M###N#H###.#
 #o#m..#i#jk.#
 #############";
