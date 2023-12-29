@@ -1,8 +1,10 @@
 use crate::icc::IntCodeComputer;
 use rand::prelude::*;
 
-const GRID_X: usize = 100;
-const GRID_Y: usize = 100;
+// const GRID_X: usize = 100;
+// const GRID_Y: usize = 100;
+const GRID_X: usize = 50;
+const GRID_Y: usize = 50;
 
 #[aoc(day15, part1)]
 pub fn original_15a(input: &str) -> u32 {
@@ -12,23 +14,39 @@ pub fn original_15a(input: &str) -> u32 {
         .map(|o| o.parse::<i64>().unwrap())
         .collect();
 
-    let mut min_steps: u32 = std::u32::MAX;
-    // TODO: Implement proper, non-random, faster solution.
-    for i in 1..=10000 {
-        print!("Sim {} ", i);
-        let steps = random_walk(v.clone());
-        min_steps = std::cmp::min(steps, min_steps);
-        println!(" min steps: {}", min_steps);
-    }
-    //print_grid(&grid);
-    min_steps
+    let mut grid = [[' '; GRID_X]; GRID_Y];
+    let x = GRID_X / 2;
+    let y = GRID_Y / 2;
+    grid[x][y] = 'X';
+    random_walk(v.clone(), &mut grid);
+    let origin = find_coordinates(&grid, 'X');
+    let oxygen = find_coordinates(&grid, 'S');
+    println!("origin at {:?} oxygen at {:?}", origin, oxygen);
+    let shortest_path =
+        pathfinding::directed::bfs::bfs(&origin, |p| successors(&grid, *p), |p| *p == oxygen);
+    (shortest_path.unwrap().len() - 1) as u32 // subtract starting point which is included in path
 }
 
-fn random_walk(program: Vec<i64>) -> u32 {
-    let mut grid = [[' '; GRID_X]; GRID_Y];
+fn successors(grid: &[[char; GRID_X]; GRID_Y], p: Location) -> Vec<Location> {
+    let mut path = Vec::new();
+    for m in [(0, 1), (1, 0), (0, -1), (-1, 0)].iter() {
+        let i: isize = p.0 + m.0;
+        let j: isize = p.1 + m.1;
+        match grid[j as usize][i as usize] {
+            '#' => continue,
+            '.' | ' ' | 'X' | 'S' => path.push(Location(i, j)),
+            _ => {}
+        }
+    }
+    path
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct Location(isize, isize);
+
+fn random_walk(program: Vec<i64>, grid: &mut [[char; GRID_X]; GRID_Y]) {
     let mut x = GRID_X / 2;
     let mut y = GRID_Y / 2;
-    grid[x][y] = 'X';
     let mut rng = rand::thread_rng();
     let mut steps: u32 = 0;
     let mut icc = IntCodeComputer::new(program, true);
@@ -47,10 +65,16 @@ fn random_walk(program: Vec<i64>) -> u32 {
                     4 => grid[x + 1][y] = '#',
                     _ => unreachable!(),
                 };
-                //println!("Robot found wall. Still at ({},{})", x, y);
+                steps += 1;
             }
             1 => {
-                grid[x][y] = if grid[x][y] == 'X' { 'X' } else { '.' };
+                grid[x][y] = if grid[x][y] == 'X' {
+                    'X'
+                } else if grid[x][y] == 'S' {
+                    'S'
+                } else {
+                    '.'
+                };
                 match movement {
                     1 => y += 1,
                     2 => y -= 1,
@@ -58,12 +82,23 @@ fn random_walk(program: Vec<i64>) -> u32 {
                     4 => x += 1,
                     _ => unreachable!(),
                 }
-                //println!("Robot moved to ({},{})", x, y);
-                grid[x][y] = if grid[x][y] == 'X' { 'X' } else { '.' };
+                grid[x][y] = if grid[x][y] == 'X' {
+                    'X'
+                } else if grid[x][y] == 'S' {
+                    'S'
+                } else {
+                    '.'
+                };
                 steps += 1;
             }
             2 => {
-                grid[x][y] = if grid[x][y] == 'X' { 'X' } else { '.' };
+                grid[x][y] = if grid[x][y] == 'X' {
+                    'X'
+                } else if grid[x][y] == 'S' {
+                    'S'
+                } else {
+                    '.'
+                };
                 match movement {
                     1 => y += 1,
                     2 => y -= 1,
@@ -71,12 +106,17 @@ fn random_walk(program: Vec<i64>) -> u32 {
                     4 => x += 1,
                     _ => unreachable!(),
                 }
-                //println!("Robot moved to ({},{}) and found oxygen system there", x, y);
                 grid[x][y] = 'S';
                 steps += 1;
-                break steps;
             }
             _ => unreachable!(),
+        }
+        if steps % 10000 == 0 {
+            // println!("Random walk step {}", steps);
+            if is_grid_complete(&grid) {
+                println!("Grid fully explored at step {}", steps);
+                return;
+            }
         }
     }
 }
@@ -90,6 +130,8 @@ fn print_grid(grid: &[[char; GRID_X]; GRID_Y]) {
         println!();
     }
 }
+
+#[allow(dead_code)]
 fn print_grid_small(grid: &[[char; 41]; 41]) {
     for a in 0..41 {
         for b in 0..41 {
@@ -99,9 +141,38 @@ fn print_grid_small(grid: &[[char; 41]; 41]) {
     }
 }
 
+fn is_grid_complete(grid: &[[char; GRID_X]; GRID_Y]) -> bool {
+    // Completed grid is 41 by 41 minus 20 outer blocks unreachable from within minus starting and oxygen nodes
+    let mut non_spaces = 0;
+    for a in 0..GRID_X {
+        for b in 0..GRID_Y {
+            match grid[b][a] {
+                ' ' => continue,
+                '#' | 'X' | 'S' | '.' => {
+                    non_spaces += 1;
+                    continue;
+                }
+                _ => unreachable!(),
+            }
+        }
+    }
+    return non_spaces == 41 * 41 - 20 - 2;
+}
+
+fn find_coordinates(grid: &[[char; GRID_X]; GRID_Y], c: char) -> Location {
+    for a in 0..GRID_X {
+        for b in 0..GRID_Y {
+            if grid[b][a] == c {
+                return Location(a as isize, b as isize);
+            }
+        }
+    }
+    unreachable!()
+}
+
 #[aoc(day15, part2)]
 pub fn original_15b(_input: &str) -> u32 {
-    // Solved grid from part 1 using a random walk and 1000 iterations. Does not always fully solve the maze, of course.
+    // Solved grid from part 1 using a random walk.
     let mut grid: [[char; 41]; 41] = [
         [
             ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#', '#', '#',
@@ -373,7 +444,7 @@ pub fn original_15b(_input: &str) -> u32 {
             minutes += 1;
         }
     }
-    print_grid_small(&grid);
+    // print_grid_small(&grid);
     minutes
 }
 
