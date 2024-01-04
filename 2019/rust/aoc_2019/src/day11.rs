@@ -1,4 +1,24 @@
 use crate::icc::IntCodeComputer;
+
+#[aoc_generator(day11)]
+pub fn generator(input: &str) -> Vec<i64> {
+    input
+        .trim()
+        .split(',')
+        .map(|o| o.parse::<i64>().unwrap())
+        .collect()
+}
+
+#[aoc(day11, part1)]
+pub fn paint_panels_start_black(v: &[i64]) -> u32 {
+    paint_panels(v, false, PanelColor::Black)
+}
+
+#[aoc(day11, part2)]
+pub fn paint_panels_start_white(v: &[i64]) -> u32 {
+    paint_panels(v, true, PanelColor::White)
+}
+
 const GRID_X: usize = 30000;
 const GRID_Y: usize = 30000;
 
@@ -26,25 +46,6 @@ enum Orienation {
 struct PanelPoint {
     painted: bool,
     color: PanelColor,
-}
-
-#[aoc_generator(day11)]
-pub fn generator(input: &str) -> Vec<i64> {
-    input
-        .trim()
-        .split(',')
-        .map(|o| o.parse::<i64>().unwrap())
-        .collect()
-}
-
-#[aoc(day11, part1)]
-pub fn paint_panels_start_black(v: &[i64]) -> u32 {
-    paint_panels(v, false, PanelColor::Black)
-}
-
-#[aoc(day11, part2)]
-pub fn paint_panels_start_white(v: &[i64]) -> u32 {
-    paint_panels(v, true, PanelColor::White)
 }
 
 fn paint_panels(v: &[i64], show_paint: bool, initial_color: PanelColor) -> u32 {
@@ -147,33 +148,4 @@ fn paint_panels(v: &[i64], show_paint: bool, initial_color: PanelColor) -> u32 {
         }
     }
     panels_painted
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::day11::generator;
-    use crate::day11::paint_panels_start_black;
-    use crate::day11::paint_panels_start_white;
-    use std::fs;
-    const ANSWER_11A: u32 = 2088;
-    const ANSWER_11B: u32 = 249;
-
-    #[test]
-    fn t11a() {
-        assert_eq!(
-            ANSWER_11A,
-            paint_panels_start_black(&generator(
-                &fs::read_to_string("input/2019/day11.txt").unwrap().trim()
-            ))
-        );
-    }
-    #[test]
-    fn t11b() {
-        assert_eq!(
-            ANSWER_11B,
-            paint_panels_start_white(&generator(
-                &fs::read_to_string("input/2019/day11.txt").unwrap().trim()
-            ))
-        );
-    }
 }

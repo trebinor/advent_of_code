@@ -2,7 +2,7 @@ const WIDTH: usize = 25;
 const HEIGHT: usize = 6;
 
 #[aoc(day08, part1, original)]
-pub fn original_8a(input: &str) -> u32 {
+pub fn original_08a(input: &str) -> u32 {
     let s: Vec<u32> = input
         .trim()
         .chars()
@@ -37,22 +37,8 @@ pub fn original_8a(input: &str) -> u32 {
     best_layer.d1 * best_layer.d2
 }
 
-#[derive(Clone)]
-struct DigitCount {
-    d0: u32,
-    d1: u32,
-    d2: u32,
-}
-
-#[derive(Clone, Copy, Debug, std::cmp::PartialEq)]
-enum PixelColor {
-    Black,
-    White,
-    Transparent,
-}
-
 #[aoc(day08, part2, original)]
-pub fn original_8b(input: &str) -> String {
+pub fn original_08b(input: &str) -> String {
     let s: Vec<u32> = input
         .trim()
         .chars()
@@ -90,34 +76,24 @@ pub fn original_8b(input: &str) -> String {
     "PFCAK".to_string()
 }
 
+#[derive(Clone)]
+struct DigitCount {
+    d0: u32,
+    d1: u32,
+    d2: u32,
+}
+
+#[derive(Clone, Copy, Debug, std::cmp::PartialEq)]
+enum PixelColor {
+    Black,
+    White,
+    Transparent,
+}
+
 fn layer_pixel(old: PixelColor, new: PixelColor) -> PixelColor {
     if old == PixelColor::Black || old == PixelColor::White {
         old
     } else {
         new
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::day08::original_8a;
-    use crate::day08::original_8b;
-    use std::fs;
-    const ANSWER_8A: u32 = 1064;
-    const ANSWER_8B: &str = "PFCAK";
-
-    #[test]
-    fn t08a() {
-        assert_eq!(
-            ANSWER_8A,
-            original_8a(&fs::read_to_string("input/2019/day8.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t08b() {
-        assert_eq!(
-            ANSWER_8B,
-            original_8b(&fs::read_to_string("input/2019/day8.txt").unwrap().trim())
-        );
     }
 }

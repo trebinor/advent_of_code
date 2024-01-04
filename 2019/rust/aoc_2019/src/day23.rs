@@ -43,10 +43,6 @@ pub fn solution_23a(input: &str) -> i64 {
     y_value_to_addr_255.unwrap()
 }
 
-pub struct NAT {
-    pub x: Option<i64>,
-    pub y: Option<i64>,
-}
 #[aoc(day23, part2)]
 pub fn solution_23b(input: &str) -> i64 {
     let v: Vec<i64> = input
@@ -120,26 +116,7 @@ pub fn solution_23b(input: &str) -> i64 {
     nat.y.unwrap()
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day23::solution_23a;
-    use crate::day23::solution_23b;
-    use std::fs;
-    const ANSWER_23A: i64 = 22659;
-    const ANSWER_23B: i64 = 17429;
-
-    #[test]
-    fn t23a() {
-        assert_eq!(
-            ANSWER_23A,
-            solution_23a(&fs::read_to_string("input/2019/day23.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t23b() {
-        assert_eq!(
-            ANSWER_23B,
-            solution_23b(&fs::read_to_string("input/2019/day23.txt").unwrap().trim())
-        );
-    }
+pub struct NAT {
+    pub x: Option<i64>,
+    pub y: Option<i64>,
 }

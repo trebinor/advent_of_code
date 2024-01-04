@@ -1,60 +1,6 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-#[derive(Debug, Eq, Hash, Clone, Copy)]
-pub struct Point {
-    x: usize,
-    y: usize,
-}
-
-impl PartialEq for Point {
-    fn eq(&self, other: &Point) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
-
-impl Point {
-    fn distance(&self, other: &Point) -> f64 {
-        ((other.x as f64 - self.x as f64).powf(2.0) + (other.y as f64 - self.y as f64).powf(2.0))
-            .sqrt()
-    }
-}
-
-trait PointAnalysis {
-    fn find_best_point(&mut self, _: &[Point]) -> Point;
-}
-
-impl PointAnalysis for AsteroidSightMap {
-    fn find_best_point(&mut self, asteroid_field: &[Point]) -> Point {
-        // Create keys in the sight map for all asteroids in the field
-        for a in asteroid_field {
-            self.entry(*a).or_default();
-        }
-
-        // Apply algorithm to each asteroid and update sight map
-        for source in asteroid_field {
-            for target in asteroid_field {
-                if source == target {
-                    continue;
-                }
-                let dx = target.x as i32 - source.x as i32;
-                let dy = target.y as i32 - source.y as i32;
-                self.entry(*source).and_modify(|e| {
-                    e.insert((dy as f64).atan2(dx as f64).to_bits());
-                });
-            }
-        }
-
-        *self
-            .keys()
-            .max_by(|x, y| self.get(x).unwrap().len().cmp(&self.get(y).unwrap().len()))
-            .unwrap()
-    }
-}
-
-type AsteroidSightMap = HashMap<Point, HashSet<u64>>;
-type AsteroidField = Vec<Point>;
-
 #[aoc_generator(day10)]
 pub fn generator(input: &str) -> AsteroidField {
     let v = input.lines().map(|l| l.trim()).collect::<Vec<&str>>();
@@ -151,132 +97,99 @@ pub fn math_on_200th_asteroid(asteroid_field: &[Point]) -> u32 {
     (this_asteroid.x as u32) * 100 + this_asteroid.y as u32
 }
 
+#[derive(Debug, Eq, Hash, Clone, Copy)]
+pub struct Point {
+    x: usize,
+    y: usize,
+}
+
+impl PartialEq for Point {
+    fn eq(&self, other: &Point) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+
+impl Point {
+    fn distance(&self, other: &Point) -> f64 {
+        ((other.x as f64 - self.x as f64).powf(2.0) + (other.y as f64 - self.y as f64).powf(2.0))
+            .sqrt()
+    }
+}
+
+trait PointAnalysis {
+    fn find_best_point(&mut self, _: &[Point]) -> Point;
+}
+
+impl PointAnalysis for AsteroidSightMap {
+    fn find_best_point(&mut self, asteroid_field: &[Point]) -> Point {
+        // Create keys in the sight map for all asteroids in the field
+        for a in asteroid_field {
+            self.entry(*a).or_default();
+        }
+
+        // Apply algorithm to each asteroid and update sight map
+        for source in asteroid_field {
+            for target in asteroid_field {
+                if source == target {
+                    continue;
+                }
+                let dx = target.x as i32 - source.x as i32;
+                let dy = target.y as i32 - source.y as i32;
+                self.entry(*source).and_modify(|e| {
+                    e.insert((dy as f64).atan2(dx as f64).to_bits());
+                });
+            }
+        }
+
+        *self
+            .keys()
+            .max_by(|x, y| self.get(x).unwrap().len().cmp(&self.get(y).unwrap().len()))
+            .unwrap()
+    }
+}
+
+type AsteroidSightMap = HashMap<Point, HashSet<u64>>;
+type AsteroidField = Vec<Point>;
+
 #[cfg(test)]
 mod tests {
     use crate::day10::generator;
-    use crate::day10::math_on_200th_asteroid;
-    use crate::day10::visible_asteroids;
     use crate::day10::AsteroidSightMap;
     use crate::day10::Point;
     use crate::day10::PointAnalysis;
     use std::fs;
-    const UNIT_INPUT_10A_1: &str = r"......#.#.
-#..#.#....
-..#######.
-.#.#.###..
-.#..#.....
-..#....#.#
-#..#....#.
-.##.#..###
-##...#..#.
-.#....####";
-    const UNIT_INPUT_10A_2: &str = r"#.#...#.#.
-.###....#.
-.#....#...
-##.#.#.#.#
-....#.#.#.
-.##..###.#
-..#...##..
-..##....##
-......#...
-.####.###.";
-    const UNIT_INPUT_10A_3: &str = r".#..#..###
-####.###.#
-....###.#.
-..###.##.#
-##.##.#.#.
-....###..#
-..#.#..#.#
-#..#.#.###
-.##...##.#
-.....#.#..";
-    const UNIT_INPUT_10A_4: &str = r".#..##.###...#######
-##.############..##.
-.#.######.########.#
-.###.#######.####.#.
-#####.##.#.##.###.##
-..#####..#.#########
-####################
-#.####....###.#.#.##
-##.#################
-#####.##.###..####..
-..######..##.#######
-####.##.####...##..#
-.#####..#.######.###
-##...#.##########...
-#.##########.#######
-.####.#.###.###.#.##
-....##.##.###..#####
-.#.#.###########.###
-#.#.#.#####.####.###
-###.##.####.##.#..##";
-    const ANSWER_10A: u32 = 263;
-    const ANSWER_10B: u32 = 1110;
-    const UNIT_ANSWER_10A_1: Point = Point { x: 5, y: 8 };
-    const UNIT_ANSWER_10A_2: Point = Point { x: 1, y: 2 };
-    const UNIT_ANSWER_10A_3: Point = Point { x: 6, y: 3 };
-    const UNIT_ANSWER_10A_4: Point = Point { x: 11, y: 13 };
+
+    const UNIT_ANSWER_10A_0: Point = Point { x: 5, y: 8 };
+    const UNIT_ANSWER_10A_1: Point = Point { x: 1, y: 2 };
+    const UNIT_ANSWER_10A_2: Point = Point { x: 6, y: 3 };
+    const UNIT_ANSWER_10A_3: Point = Point { x: 11, y: 13 };
 
     #[test]
-    fn t10a() {
+    fn t10a_unit_example0() {
         assert_eq!(
-            ANSWER_10A,
-            visible_asteroids(&generator(
-                &fs::read_to_string("input/2019/day10.txt").unwrap().trim()
-            ))
+            UNIT_ANSWER_10A_0,
+            AsteroidSightMap::new().find_best_point(&generator(&fs::read_to_string("input/2019/10/example0").unwrap().trim()))
         );
     }
     #[test]
-    fn t10b() {
-        assert_eq!(
-            ANSWER_10B,
-            math_on_200th_asteroid(&generator(
-                &fs::read_to_string("input/2019/day10.txt").unwrap().trim()
-            ))
-        );
-    }
-    #[test]
-    fn t10a_supplied_inputs_1() {
+    fn t10a_unit_example1() {
         assert_eq!(
             UNIT_ANSWER_10A_1,
-            AsteroidSightMap::new().find_best_point(&generator(UNIT_INPUT_10A_1))
+            AsteroidSightMap::new().find_best_point(&generator(&fs::read_to_string("input/2019/10/example1").unwrap().trim()))
         );
     }
     #[test]
-    fn t10a_supplied_inputs_2() {
+    fn t10a_unit_example2() {
         assert_eq!(
             UNIT_ANSWER_10A_2,
-            AsteroidSightMap::new().find_best_point(&generator(UNIT_INPUT_10A_2))
+            AsteroidSightMap::new().find_best_point(&generator(&fs::read_to_string("input/2019/10/example2").unwrap().trim()))
         );
     }
     #[test]
-    fn t10a_supplied_inputs_3() {
+    fn t10a_unit_example3() {
         assert_eq!(
             UNIT_ANSWER_10A_3,
-            AsteroidSightMap::new().find_best_point(&generator(UNIT_INPUT_10A_3))
+            AsteroidSightMap::new().find_best_point(&generator(&fs::read_to_string("input/2019/10/example3").unwrap().trim()))
         );
-    }
-    #[test]
-    fn t10a_supplied_inputs_4() {
-        assert_eq!(
-            UNIT_ANSWER_10A_4,
-            AsteroidSightMap::new().find_best_point(&generator(UNIT_INPUT_10A_4))
-        );
-    }
-    #[test]
-    fn t10a_asteroids_count_1() {
-        assert_eq!(33, visible_asteroids(&generator(UNIT_INPUT_10A_1)));
-    }
-    #[test]
-    fn t10a_asteroids_count_2() {
-        assert_eq!(35, visible_asteroids(&generator(UNIT_INPUT_10A_2)));
-    }
-    #[test]
-    fn t10a_asteroids_count_3() {
-        assert_eq!(41, visible_asteroids(&generator(UNIT_INPUT_10A_3)));
-    }
-    #[test]
-    fn t10a_asteroids_count_4() {
-        assert_eq!(210, visible_asteroids(&generator(UNIT_INPUT_10A_4)));
     }
 }

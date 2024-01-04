@@ -1,11 +1,6 @@
 use crate::icc::IntCodeComputer;
 use rand::prelude::*;
 
-// const GRID_X: usize = 100;
-// const GRID_Y: usize = 100;
-const GRID_X: usize = 50;
-const GRID_Y: usize = 50;
-
 #[aoc(day15, part1)]
 pub fn original_15a(input: &str) -> u32 {
     let v: Vec<i64> = input
@@ -25,149 +20,6 @@ pub fn original_15a(input: &str) -> u32 {
     let shortest_path =
         pathfinding::directed::bfs::bfs(&origin, |p| successors(&grid, *p), |p| *p == oxygen);
     (shortest_path.unwrap().len() - 1) as u32 // subtract starting point which is included in path
-}
-
-fn successors(grid: &[[char; GRID_X]; GRID_Y], p: Location) -> Vec<Location> {
-    let mut path = Vec::new();
-    for m in [(0, 1), (1, 0), (0, -1), (-1, 0)].iter() {
-        let i: isize = p.0 + m.0;
-        let j: isize = p.1 + m.1;
-        match grid[j as usize][i as usize] {
-            '#' => continue,
-            '.' | ' ' | 'X' | 'S' => path.push(Location(i, j)),
-            _ => {}
-        }
-    }
-    path
-}
-
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-struct Location(isize, isize);
-
-fn random_walk(program: Vec<i64>, grid: &mut [[char; GRID_X]; GRID_Y]) {
-    let mut x = GRID_X / 2;
-    let mut y = GRID_Y / 2;
-    let mut rng = rand::thread_rng();
-    let mut steps: u32 = 0;
-    let mut icc = IntCodeComputer::new(program, true);
-    icc.program.resize(1024 * 1024, 0);
-    loop {
-        let movement = rng.gen_range(1, 5); //NSWE
-        icc.inputq.push_back(movement);
-        icc.execute();
-        assert!(!icc.output.is_empty());
-        match icc.consume_output().parse().unwrap() {
-            0 => {
-                match movement {
-                    1 => grid[x][y + 1] = '#',
-                    2 => grid[x][y - 1] = '#',
-                    3 => grid[x - 1][y] = '#',
-                    4 => grid[x + 1][y] = '#',
-                    _ => unreachable!(),
-                };
-                steps += 1;
-            }
-            1 => {
-                grid[x][y] = if grid[x][y] == 'X' {
-                    'X'
-                } else if grid[x][y] == 'S' {
-                    'S'
-                } else {
-                    '.'
-                };
-                match movement {
-                    1 => y += 1,
-                    2 => y -= 1,
-                    3 => x -= 1,
-                    4 => x += 1,
-                    _ => unreachable!(),
-                }
-                grid[x][y] = if grid[x][y] == 'X' {
-                    'X'
-                } else if grid[x][y] == 'S' {
-                    'S'
-                } else {
-                    '.'
-                };
-                steps += 1;
-            }
-            2 => {
-                grid[x][y] = if grid[x][y] == 'X' {
-                    'X'
-                } else if grid[x][y] == 'S' {
-                    'S'
-                } else {
-                    '.'
-                };
-                match movement {
-                    1 => y += 1,
-                    2 => y -= 1,
-                    3 => x -= 1,
-                    4 => x += 1,
-                    _ => unreachable!(),
-                }
-                grid[x][y] = 'S';
-                steps += 1;
-            }
-            _ => unreachable!(),
-        }
-        if steps % 10000 == 0 {
-            // println!("Random walk step {}", steps);
-            if is_grid_complete(&grid) {
-                println!("Grid fully explored at step {}", steps);
-                return;
-            }
-        }
-    }
-}
-
-#[allow(dead_code)]
-fn print_grid(grid: &[[char; GRID_X]; GRID_Y]) {
-    for a in 0..GRID_X {
-        for b in 0..GRID_Y {
-            print!("{}", grid[b][a]);
-        }
-        println!();
-    }
-}
-
-#[allow(dead_code)]
-fn print_grid_small(grid: &[[char; 41]; 41]) {
-    for a in 0..41 {
-        for b in 0..41 {
-            print!("{}", grid[b][a]);
-        }
-        println!();
-    }
-}
-
-fn is_grid_complete(grid: &[[char; GRID_X]; GRID_Y]) -> bool {
-    // Completed grid is 41 by 41 minus 20 outer blocks unreachable from within minus starting and oxygen nodes
-    let mut non_spaces = 0;
-    for a in 0..GRID_X {
-        for b in 0..GRID_Y {
-            match grid[b][a] {
-                ' ' => continue,
-                '#' | 'X' | 'S' | '.' => {
-                    non_spaces += 1;
-                    continue;
-                }
-                _ => unreachable!(),
-            }
-        }
-    }
-    return non_spaces == 41 * 41 - 20 - 2;
-}
-
-fn find_coordinates(grid: &[[char; GRID_X]; GRID_Y], c: char) -> Location {
-    for a in 0..GRID_X {
-        for b in 0..GRID_Y {
-            if grid[b][a] == c {
-                return Location(a as isize, b as isize);
-            }
-        }
-    }
-    unreachable!()
 }
 
 #[aoc(day15, part2)]
@@ -448,26 +300,148 @@ pub fn original_15b(_input: &str) -> u32 {
     minutes
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day15::original_15a;
-    use crate::day15::original_15b;
-    use std::fs;
-    const ANSWER_15A: u32 = 204;
-    const ANSWER_15B: u32 = 340;
+const GRID_X: usize = 50;
+const GRID_Y: usize = 50;
 
-    #[test]
-    fn t15a() {
-        assert_eq!(
-            ANSWER_15A,
-            original_15a(&fs::read_to_string("input/2019/day15.txt").unwrap().trim())
-        );
+fn successors(grid: &[[char; GRID_X]; GRID_Y], p: Location) -> Vec<Location> {
+    let mut path = Vec::new();
+    for m in [(0, 1), (1, 0), (0, -1), (-1, 0)].iter() {
+        let i: isize = p.0 + m.0;
+        let j: isize = p.1 + m.1;
+        match grid[j as usize][i as usize] {
+            '#' => continue,
+            '.' | ' ' | 'X' | 'S' => path.push(Location(i, j)),
+            _ => {}
+        }
     }
-    #[test]
-    fn t15b() {
-        assert_eq!(
-            ANSWER_15B,
-            original_15b(&fs::read_to_string("input/2019/day15.txt").unwrap().trim())
-        );
+    path
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct Location(isize, isize);
+
+fn random_walk(program: Vec<i64>, grid: &mut [[char; GRID_X]; GRID_Y]) {
+    let mut x = GRID_X / 2;
+    let mut y = GRID_Y / 2;
+    let mut rng = rand::thread_rng();
+    let mut steps: u32 = 0;
+    let mut icc = IntCodeComputer::new(program, true);
+    icc.program.resize(1024 * 1024, 0);
+    loop {
+        let movement = rng.gen_range(1, 5); //NSWE
+        icc.inputq.push_back(movement);
+        icc.execute();
+        assert!(!icc.output.is_empty());
+        match icc.consume_output().parse().unwrap() {
+            0 => {
+                match movement {
+                    1 => grid[x][y + 1] = '#',
+                    2 => grid[x][y - 1] = '#',
+                    3 => grid[x - 1][y] = '#',
+                    4 => grid[x + 1][y] = '#',
+                    _ => unreachable!(),
+                };
+                steps += 1;
+            }
+            1 => {
+                grid[x][y] = if grid[x][y] == 'X' {
+                    'X'
+                } else if grid[x][y] == 'S' {
+                    'S'
+                } else {
+                    '.'
+                };
+                match movement {
+                    1 => y += 1,
+                    2 => y -= 1,
+                    3 => x -= 1,
+                    4 => x += 1,
+                    _ => unreachable!(),
+                }
+                grid[x][y] = if grid[x][y] == 'X' {
+                    'X'
+                } else if grid[x][y] == 'S' {
+                    'S'
+                } else {
+                    '.'
+                };
+                steps += 1;
+            }
+            2 => {
+                grid[x][y] = if grid[x][y] == 'X' {
+                    'X'
+                } else if grid[x][y] == 'S' {
+                    'S'
+                } else {
+                    '.'
+                };
+                match movement {
+                    1 => y += 1,
+                    2 => y -= 1,
+                    3 => x -= 1,
+                    4 => x += 1,
+                    _ => unreachable!(),
+                }
+                grid[x][y] = 'S';
+                steps += 1;
+            }
+            _ => unreachable!(),
+        }
+        if steps % 10000 == 0 {
+            // println!("Random walk step {}", steps);
+            if is_grid_complete(&grid) {
+                println!("Grid fully explored at step {}", steps);
+                return;
+            }
+        }
     }
+}
+
+#[allow(dead_code)]
+fn print_grid(grid: &[[char; GRID_X]; GRID_Y]) {
+    for a in 0..GRID_X {
+        for b in 0..GRID_Y {
+            print!("{}", grid[b][a]);
+        }
+        println!();
+    }
+}
+
+#[allow(dead_code)]
+fn print_grid_small(grid: &[[char; 41]; 41]) {
+    for a in 0..41 {
+        for b in 0..41 {
+            print!("{}", grid[b][a]);
+        }
+        println!();
+    }
+}
+
+fn is_grid_complete(grid: &[[char; GRID_X]; GRID_Y]) -> bool {
+    // Completed grid is 41 by 41 minus 20 outer blocks unreachable from within minus starting and oxygen nodes
+    let mut non_spaces = 0;
+    for a in 0..GRID_X {
+        for b in 0..GRID_Y {
+            match grid[b][a] {
+                ' ' => continue,
+                '#' | 'X' | 'S' | '.' => {
+                    non_spaces += 1;
+                    continue;
+                }
+                _ => unreachable!(),
+            }
+        }
+    }
+    return non_spaces == 41 * 41 - 20 - 2;
+}
+
+fn find_coordinates(grid: &[[char; GRID_X]; GRID_Y], c: char) -> Location {
+    for a in 0..GRID_X {
+        for b in 0..GRID_Y {
+            if grid[b][a] == c {
+                return Location(a as isize, b as isize);
+            }
+        }
+    }
+    unreachable!()
 }

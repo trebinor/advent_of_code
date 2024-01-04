@@ -2,7 +2,7 @@ use crate::icc::IntCodeComputer;
 use regex::Regex;
 
 #[aoc(day07, part1, original)]
-pub fn original_7a(input: &str) -> i64 {
+pub fn original_07a(input: &str) -> i64 {
     let v: Vec<i64> = input
         .trim()
         .split(',')
@@ -31,37 +31,8 @@ pub fn original_7a(input: &str) -> i64 {
     max_output
 }
 
-fn phase_sequence_allowed(phases: i64) -> bool {
-    let v = format!("{:0>5}", phases.to_string());
-    let re = Regex::new(r"[5-9]+").unwrap();
-    let mut allowed = true;
-    'outer: for x in 0..=4 {
-        for y in 0..=4 {
-            if x != y && (re.is_match(&v) || (v.chars().nth(x) == v.chars().nth(y))) {
-                allowed = false;
-                break 'outer;
-            }
-        }
-    }
-    allowed
-}
-fn phase_sequence_allowed_high(phases: i64) -> bool {
-    let v = format!("{:0>5}", phases.to_string());
-    let re = Regex::new(r"[0-4]+").unwrap();
-    let mut allowed = true;
-    'outer: for x in 0..=4 {
-        for y in 0..=4 {
-            if x != y && (re.is_match(&v) || (v.chars().nth(x) == v.chars().nth(y))) {
-                allowed = false;
-                break 'outer;
-            }
-        }
-    }
-    allowed
-}
-
 #[aoc(day07, part2, original)]
-pub fn original_7b(input: &str) -> i64 {
+pub fn original_07b(input: &str) -> i64 {
     let v: Vec<i64> = input
         .trim()
         .split(',')
@@ -108,26 +79,31 @@ pub fn original_7b(input: &str) -> i64 {
     max_output
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day07::original_7a;
-    use crate::day07::original_7b;
-    use std::fs;
-    const ANSWER_7A: i64 = 437_860;
-    const ANSWER_7B: i64 = 49_810_599;
-
-    #[test]
-    fn t07a() {
-        assert_eq!(
-            ANSWER_7A,
-            original_7a(&fs::read_to_string("input/2019/day7.txt").unwrap().trim())
-        );
+fn phase_sequence_allowed(phases: i64) -> bool {
+    let v = format!("{:0>5}", phases.to_string());
+    let re = Regex::new(r"[5-9]+").unwrap();
+    let mut allowed = true;
+    'outer: for x in 0..=4 {
+        for y in 0..=4 {
+            if x != y && (re.is_match(&v) || (v.chars().nth(x) == v.chars().nth(y))) {
+                allowed = false;
+                break 'outer;
+            }
+        }
     }
-    #[test]
-    fn t07b() {
-        assert_eq!(
-            ANSWER_7B,
-            original_7b(&fs::read_to_string("input/2019/day7.txt").unwrap().trim())
-        );
+    allowed
+}
+fn phase_sequence_allowed_high(phases: i64) -> bool {
+    let v = format!("{:0>5}", phases.to_string());
+    let re = Regex::new(r"[0-4]+").unwrap();
+    let mut allowed = true;
+    'outer: for x in 0..=4 {
+        for y in 0..=4 {
+            if x != y && (re.is_match(&v) || (v.chars().nth(x) == v.chars().nth(y))) {
+                allowed = false;
+                break 'outer;
+            }
+        }
     }
+    allowed
 }

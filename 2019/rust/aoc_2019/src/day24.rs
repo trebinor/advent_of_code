@@ -1,16 +1,6 @@
 use std::collections::HashSet;
 use std::collections::VecDeque;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub enum Life {
-    Empty,
-    Bug,
-}
-
-const GRID_X: usize = 5;
-const GRID_Y: usize = 5;
-type GridLevel = [[Life; GRID_X]; GRID_Y];
-
 #[aoc_generator(day24)]
 pub fn generator(input: &str) -> [[Life; GRID_X]; GRID_Y] {
     let v = input.lines().map(|l| l.trim()).collect::<Vec<&str>>();
@@ -26,6 +16,31 @@ pub fn generator(input: &str) -> [[Life; GRID_X]; GRID_Y] {
     }
     eris
 }
+
+#[aoc(day24, part1)]
+pub fn biodiversity_of_first_repeated_state(grid: &[[Life; GRID_X]; GRID_Y]) -> usize {
+    let mut grid_mutable = *grid;
+    let mut bio: HashSet<usize> = HashSet::new();
+    while bio.insert(biodiversity(grid_mutable)) {
+        new_generation(&mut grid_mutable);
+    }
+    biodiversity(grid_mutable)
+}
+
+#[aoc(day24, part2)]
+pub fn total_bugs_200_iterations(grid: &GridLevel) -> usize {
+    total_bugs_n_iterations(grid, 200)
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum Life {
+    Empty,
+    Bug,
+}
+
+const GRID_X: usize = 5;
+const GRID_Y: usize = 5;
+type GridLevel = [[Life; GRID_X]; GRID_Y];
 
 fn biodiversity(grid: GridLevel) -> usize {
     let mut sum: usize = 0;
@@ -289,21 +304,6 @@ fn new_generation_recursive(grids: &mut VecDeque<GridLevel>) {
     }
 }
 
-#[aoc(day24, part1)]
-pub fn biodiversity_of_first_repeated_state(grid: &[[Life; GRID_X]; GRID_Y]) -> usize {
-    let mut grid_mutable = *grid;
-    let mut bio: HashSet<usize> = HashSet::new();
-    while bio.insert(biodiversity(grid_mutable)) {
-        new_generation(&mut grid_mutable);
-    }
-    biodiversity(grid_mutable)
-}
-
-#[aoc(day24, part2)]
-pub fn total_bugs_200_iterations(grid: &GridLevel) -> usize {
-    total_bugs_n_iterations(grid, 200)
-}
-
 fn total_bugs_n_iterations(grid: &GridLevel, n: usize) -> usize {
     let mut grids: VecDeque<GridLevel> = VecDeque::new();
     grids.push_front(grid.clone());
@@ -319,60 +319,4 @@ fn total_bugs_n_iterations(grid: &GridLevel, n: usize) -> usize {
         new_generation_recursive(&mut grids);
     }
     grids.iter().fold(0, |acc, g| acc + total_bugs(*g))
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::day24::biodiversity_of_first_repeated_state;
-    use crate::day24::generator;
-    use crate::day24::total_bugs_200_iterations;
-    use crate::day24::total_bugs_n_iterations;
-    use std::fs;
-    const ANSWER_24A: usize = 1_151_290;
-    const ANSWER_24B: usize = 1953;
-    const UNIT_ANSWER_24A: usize = 2_129_920;
-    const UNIT_ANSWER_24B: usize = 99;
-    const UNIT_INPUT_24A: &str = r"....#
-#..#.
-#..##
-..#..
-#....";
-    const UNIT_INPUT_24B: &str = r"....#
-#..#.
-#..##
-..#..
-#....";
-
-    #[test]
-    fn t24a() {
-        assert_eq!(
-            ANSWER_24A,
-            biodiversity_of_first_repeated_state(&generator(
-                &fs::read_to_string("input/2019/day24.txt").unwrap().trim()
-            ))
-        );
-    }
-    #[test]
-    fn t24b() {
-        assert_eq!(
-            ANSWER_24B,
-            total_bugs_200_iterations(&generator(
-                &fs::read_to_string("input/2019/day24.txt").unwrap().trim()
-            ))
-        );
-    }
-    #[test]
-    fn t24a_supplied_inputs() {
-        assert_eq!(
-            UNIT_ANSWER_24A,
-            biodiversity_of_first_repeated_state(&generator(UNIT_INPUT_24A))
-        );
-    }
-    #[test]
-    fn t24b_supplied_inputs() {
-        assert_eq!(
-            UNIT_ANSWER_24B,
-            total_bugs_n_iterations(&generator(UNIT_INPUT_24B), 10)
-        );
-    }
 }

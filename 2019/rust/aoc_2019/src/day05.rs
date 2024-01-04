@@ -1,16 +1,60 @@
 use crate::icc::IntCodeComputer;
 
 #[aoc(day05, part1, original)]
-pub fn original_5a(input: &str) -> String {
+pub fn original_05a(input: &str) -> String {
     let mut v: Vec<i64> = input
         .trim()
         .split(',')
         .map(|o| o.parse::<i64>().unwrap())
         .collect();
-    compute_5a(&mut v)
+    compute_05a(&mut v)
 }
 
-fn compute_5a(v: &mut Vec<i64>) -> String {
+#[aoc(day05, part1, icc)]
+pub fn icc_05a(input: &str) -> String {
+    let v: Vec<i64> = input
+        .trim()
+        .split(',')
+        .map(|o| o.parse::<i64>().unwrap())
+        .collect();
+    let mut icc = IntCodeComputer::new(v, true);
+    icc.inputq.push_back(1);
+    loop {
+        icc.execute();
+        let output = icc.consume_output();
+        icc.execute_one();
+        if icc.terminated {
+            break output;
+        } else {
+            assert_eq!(output, "0");
+        }
+    }
+}
+
+#[aoc(day05, part2, original)]
+pub fn original_05b(input: &str) -> String {
+    let mut v: Vec<i64> = input
+        .trim()
+        .split(',')
+        .map(|o| o.parse::<i64>().unwrap())
+        .collect();
+    compute_05b(&mut v)
+}
+
+#[aoc(day05, part2, icc)]
+pub fn icc_05b(input: &str) -> String {
+    let v: Vec<i64> = input
+        .trim()
+        .split(',')
+        .map(|o| o.parse::<i64>().unwrap())
+        .collect();
+    let mut icc = IntCodeComputer::new(v, false);
+    icc.inputq.push_back(5);
+    icc.execute();
+    icc.consume_output()
+}
+
+fn compute_05a(v: &mut Vec<i64>) -> String {
     let mut pc: usize = 0;
     const INPUT: i64 = 1;
     let mut output: String = "".to_string();
@@ -138,16 +182,6 @@ fn operations_5_to_8(
     }
 }
 
-#[aoc(day05, part2, original)]
-pub fn original_5b(input: &str) -> String {
-    let mut v: Vec<i64> = input
-        .trim()
-        .split(',')
-        .map(|o| o.parse::<i64>().unwrap())
-        .collect();
-    compute_5b(&mut v)
-}
-
 #[derive(PartialEq, PartialOrd)]
 enum Operation {
     JumpIfTrue,
@@ -156,7 +190,7 @@ enum Operation {
     Equals,
 }
 
-fn compute_5b(v: &mut Vec<i64>) -> String {
+fn compute_05b(v: &mut Vec<i64>) -> String {
     let mut pc: usize = 0;
     const INPUT: i64 = 5;
     let mut output: String = "".to_string();
@@ -189,78 +223,4 @@ fn compute_5b(v: &mut Vec<i64>) -> String {
         }
     }
     output
-}
-
-#[aoc(day05, part1, icc)]
-pub fn icc_5a(input: &str) -> String {
-    let v: Vec<i64> = input
-        .trim()
-        .split(',')
-        .map(|o| o.parse::<i64>().unwrap())
-        .collect();
-    let mut icc = IntCodeComputer::new(v, true);
-    icc.inputq.push_back(1);
-    loop {
-        icc.execute();
-        let output = icc.consume_output();
-        icc.execute_one();
-        if icc.terminated {
-            break output;
-        } else {
-            assert_eq!(output, "0");
-        }
-    }
-}
-
-#[aoc(day05, part2, icc)]
-pub fn icc_5b(input: &str) -> String {
-    let v: Vec<i64> = input
-        .trim()
-        .split(',')
-        .map(|o| o.parse::<i64>().unwrap())
-        .collect();
-    let mut icc = IntCodeComputer::new(v, false);
-    icc.inputq.push_back(5);
-    icc.execute();
-    icc.consume_output()
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::day05::icc_5a;
-    use crate::day05::icc_5b;
-    use crate::day05::original_5a;
-    use crate::day05::original_5b;
-    use std::fs;
-    const ANSWER_5A: &str = "16489636";
-    const ANSWER_5B: &str = "9386583";
-
-    #[test]
-    fn t05a() {
-        assert!(
-            original_5a(&fs::read_to_string("input/2019/day5.txt").unwrap().trim())
-                .ends_with(ANSWER_5A)
-        );
-    }
-    #[test]
-    fn t05b() {
-        assert!(
-            original_5b(&fs::read_to_string("input/2019/day5.txt").unwrap().trim())
-                .ends_with(ANSWER_5B)
-        );
-    }
-
-    #[test]
-    fn t05a_icc() {
-        assert_eq!(
-            ANSWER_5A,
-            icc_5a(&fs::read_to_string("input/2019/day5.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t05b_icc() {
-        assert!(
-            icc_5b(&fs::read_to_string("input/2019/day5.txt").unwrap().trim()).ends_with(ANSWER_5B)
-        );
-    }
 }

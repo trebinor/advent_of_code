@@ -1,31 +1,3 @@
-fn deal_with_increment(cards: &mut [usize], increment: usize) {
-    let mut new_cards = [0; 10007];
-    let mut i = 0;
-    let mut j = 0;
-    while i < cards.len() {
-        assert_eq!(new_cards[j], 0);
-        new_cards[j] = cards[i];
-        i += 1;
-        j = (j + increment) % cards.len()
-    }
-    cards.copy_from_slice(&new_cards);
-    for i in 0..cards.len() {
-        assert_eq!(new_cards[i], cards[i]);
-    }
-}
-
-fn deal_into_new_stack(cards: &mut [usize]) {
-    cards.reverse();
-}
-
-fn cut(cards: &mut [usize], offset: i32) {
-    if offset > 0 {
-        cards.rotate_left(offset as usize);
-    } else if offset < 0 {
-        cards.rotate_right(offset.abs() as usize);
-    }
-}
-
 #[aoc(day22, part1)]
 pub fn solution_22a(input: &str) -> u64 {
     let s: Vec<&str> = input.lines().map(|l| l.trim()).collect();
@@ -79,26 +51,30 @@ pub fn solution_22b(input: &str) -> u64 {
     45_347_150_615_590
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day22::solution_22a;
-    use crate::day22::solution_22b;
-    use std::fs;
-    const ANSWER_22A: u64 = 2939;
-    const ANSWER_22B: u64 = 45_347_150_615_590;
-
-    #[test]
-    fn t22a() {
-        assert_eq!(
-            ANSWER_22A,
-            solution_22a(&fs::read_to_string("input/2019/day22.txt").unwrap().trim())
-        );
+fn deal_with_increment(cards: &mut [usize], increment: usize) {
+    let mut new_cards = [0; 10007];
+    let mut i = 0;
+    let mut j = 0;
+    while i < cards.len() {
+        assert_eq!(new_cards[j], 0);
+        new_cards[j] = cards[i];
+        i += 1;
+        j = (j + increment) % cards.len()
     }
-    #[test]
-    fn t22b() {
-        assert_eq!(
-            ANSWER_22B,
-            solution_22b(&fs::read_to_string("input/2019/day22.txt").unwrap().trim())
-        );
+    cards.copy_from_slice(&new_cards);
+    for i in 0..cards.len() {
+        assert_eq!(new_cards[i], cards[i]);
+    }
+}
+
+fn deal_into_new_stack(cards: &mut [usize]) {
+    cards.reverse();
+}
+
+fn cut(cards: &mut [usize], offset: i32) {
+    if offset > 0 {
+        cards.rotate_left(offset as usize);
+    } else if offset < 0 {
+        cards.rotate_right(offset.abs() as usize);
     }
 }

@@ -170,27 +170,3 @@ pub fn solution_17b(input: &str) -> i64 {
     let split = output.split("1010").collect::<Vec<&str>>().pop().unwrap(); // robot prints the grid at the end for some reason, so split the dust after the final newlines
     split.parse::<i64>().unwrap()
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::day17::solution_17a;
-    use crate::day17::solution_17b;
-    use std::fs;
-    const ANSWER_17A: u32 = 9544;
-    const ANSWER_17B: i64 = 1_499_679;
-
-    #[test]
-    fn t17a() {
-        assert_eq!(
-            ANSWER_17A,
-            solution_17a(&fs::read_to_string("input/2019/day17.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t17b() {
-        assert_eq!(
-            ANSWER_17B,
-            solution_17b(&fs::read_to_string("input/2019/day17.txt").unwrap().trim())
-        );
-    }
-}

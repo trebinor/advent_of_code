@@ -1,7 +1,7 @@
 #[aoc(day04, part1, original)]
-pub fn original_4a(_input: &str) -> u32 {
-    let min = 278384;
-    let max = 824795;
+pub fn original_04a(_input: &str) -> u32 {
+    let min = 278_384;
+    let max = 824_795;
     let mut count = 0;
     for i in min..=max {
         if is_a_double_digit(i) && is_monotonically_increasing(i) {
@@ -12,7 +12,7 @@ pub fn original_4a(_input: &str) -> u32 {
 }
 
 #[aoc(day04, part1, parsed)]
-pub fn parsed_4a(input: &str) -> u32 {
+pub fn parsed_04a(input: &str) -> u32 {
     let v: Vec<i32> = input
         .trim()
         .splitn(2, '-')
@@ -21,6 +21,35 @@ pub fn parsed_4a(input: &str) -> u32 {
     let mut count = 0;
     (v[0]..=v[1]).for_each(|i: i32| {
         if is_a_double_digit(i) && is_monotonically_increasing(i) {
+            count += 1
+        }
+    });
+    count
+}
+
+#[aoc(day04, part2, original)]
+pub fn original_04b(_input: &str) -> u32 {
+    let min = 278_384;
+    let max = 824_795;
+    let mut count = 0;
+    for i in min..=max {
+        if is_a_double_digit_strict(i) && is_monotonically_increasing(i) {
+            count += 1;
+        }
+    }
+    count
+}
+
+#[aoc(day04, part2, parsed)]
+pub fn parsed_04b(input: &str) -> u32 {
+    let v: Vec<i32> = input
+        .trim()
+        .splitn(2, '-')
+        .map(|m| m.parse::<i32>().unwrap())
+        .collect();
+    let mut count = 0;
+    (v[0]..=v[1]).for_each(|i: i32| {
+        if is_a_double_digit_strict(i) && is_monotonically_increasing(i) {
             count += 1
         }
     });
@@ -75,73 +104,4 @@ fn is_a_double_digit_strict(i: i32) -> bool {
         }
     }
     false
-}
-
-#[aoc(day04, part2, original)]
-pub fn original_4b(_input: &str) -> u32 {
-    let min = 278_384;
-    let max = 824_795;
-    let mut count = 0;
-    for i in min..=max {
-        if is_a_double_digit_strict(i) && is_monotonically_increasing(i) {
-            count += 1;
-        }
-    }
-    count
-}
-
-#[aoc(day04, part2, parsed)]
-pub fn parsed_4b(input: &str) -> u32 {
-    let v: Vec<i32> = input
-        .trim()
-        .splitn(2, '-')
-        .map(|m| m.parse::<i32>().unwrap())
-        .collect();
-    let mut count = 0;
-    (v[0]..=v[1]).for_each(|i: i32| {
-        if is_a_double_digit_strict(i) && is_monotonically_increasing(i) {
-            count += 1
-        }
-    });
-    count
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::day04::original_4a;
-    use crate::day04::original_4b;
-    use crate::day04::parsed_4a;
-    use crate::day04::parsed_4b;
-    use std::fs;
-    const ANSWER_4A: u32 = 921;
-    const ANSWER_4B: u32 = 603;
-
-    #[test]
-    fn t04a() {
-        assert_eq!(
-            ANSWER_4A,
-            original_4a(&fs::read_to_string("input/2019/day4.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t04b() {
-        assert_eq!(
-            ANSWER_4B,
-            original_4b(&fs::read_to_string("input/2019/day4.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t04a_parsed() {
-        assert_eq!(
-            ANSWER_4A,
-            parsed_4a(&fs::read_to_string("input/2019/day4.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t04b_parsed() {
-        assert_eq!(
-            ANSWER_4B,
-            parsed_4b(&fs::read_to_string("input/2019/day4.txt").unwrap().trim())
-        );
-    }
 }

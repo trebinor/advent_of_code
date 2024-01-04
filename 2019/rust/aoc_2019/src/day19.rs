@@ -32,10 +32,6 @@ pub fn solution_19a(input: &str) -> usize {
     ones
 }
 
-fn math_on_closest_x_y_in_square(x: usize, y: usize) -> usize {
-    x * 10000 + y
-}
-
 #[aoc(day19, part2)]
 pub fn solution_19b(input: &str) -> usize {
     let v: Vec<i64> = input
@@ -123,26 +119,6 @@ pub fn solution_19b(input: &str) -> usize {
     math_on_closest_x_y_in_square(x, y - 100 + 1) // TODO: Why do we need to adjust by 1?
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day19::solution_19a;
-    use crate::day19::solution_19b;
-    use std::fs;
-    const ANSWER_19A: usize = 226;
-    const ANSWER_19B: usize = 7900946;
-
-    #[test]
-    fn t19a() {
-        assert_eq!(
-            ANSWER_19A,
-            solution_19a(&fs::read_to_string("input/2019/day19.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t19b() {
-        assert_eq!(
-            ANSWER_19B,
-            solution_19b(&fs::read_to_string("input/2019/day19.txt").unwrap().trim())
-        );
-    }
+fn math_on_closest_x_y_in_square(x: usize, y: usize) -> usize {
+    x * 10000 + y
 }

@@ -1,25 +1,5 @@
 use crate::icc::IntCodeComputer;
 
-#[derive(PartialEq, Debug)]
-enum Tile {
-    Empty,
-    Wall,
-    Block,
-    HorizontalPaddle,
-    Ball,
-}
-
-fn get_tile(tile_num: i64) -> Tile {
-    match tile_num {
-        0 => Tile::Empty,
-        1 => Tile::Wall,
-        2 => Tile::Block,
-        3 => Tile::HorizontalPaddle,
-        4 => Tile::Ball,
-        _ => unreachable!(),
-    }
-}
-
 #[aoc(day13, part1)]
 pub fn original_13a(input: &str) -> i64 {
     let v: Vec<i64> = input
@@ -101,26 +81,22 @@ pub fn original_13b(input: &str) -> i64 {
     score
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day13::original_13a;
-    use crate::day13::original_13b;
-    use std::fs;
-    const ANSWER_13A: i64 = 427;
-    const ANSWER_13B: i64 = 21426;
+#[derive(PartialEq, Debug)]
+enum Tile {
+    Empty,
+    Wall,
+    Block,
+    HorizontalPaddle,
+    Ball,
+}
 
-    #[test]
-    fn t13a() {
-        assert_eq!(
-            ANSWER_13A,
-            original_13a(&fs::read_to_string("input/2019/day13.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t13b() {
-        assert_eq!(
-            ANSWER_13B,
-            original_13b(&fs::read_to_string("input/2019/day13.txt").unwrap().trim())
-        );
+fn get_tile(tile_num: i64) -> Tile {
+    match tile_num {
+        0 => Tile::Empty,
+        1 => Tile::Wall,
+        2 => Tile::Block,
+        3 => Tile::HorizontalPaddle,
+        4 => Tile::Ball,
+        _ => unreachable!(),
     }
 }

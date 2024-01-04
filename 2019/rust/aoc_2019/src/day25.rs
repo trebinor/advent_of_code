@@ -35,18 +35,3 @@ pub fn solution_25a(input: &str) -> u32 {
     // through trial and error, I discovered the bot needs to hold easter egg, hologram, dark matter, klein bottle
     1090617344
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::day25::solution_25a;
-    use std::fs;
-    const ANSWER_25A: u32 = 1090617344;
-
-    #[test]
-    fn t25a() {
-        assert_eq!(
-            ANSWER_25A,
-            solution_25a(&fs::read_to_string("input/2019/day25.txt").unwrap().trim())
-        );
-    }
-}

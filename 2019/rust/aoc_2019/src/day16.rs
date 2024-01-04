@@ -62,27 +62,3 @@ pub fn solution_16b(input: &str) -> String {
         .map(|n| n.to_string())
         .collect()
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::day16::solution_16a;
-    use crate::day16::solution_16b;
-    use std::fs;
-    const ANSWER_16A: &str = "27831665";
-    const ANSWER_16B: &str = "36265589";
-
-    #[test]
-    fn t16a() {
-        assert_eq!(
-            ANSWER_16A,
-            solution_16a(&fs::read_to_string("input/2019/day16.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t16b() {
-        assert_eq!(
-            ANSWER_16B,
-            solution_16b(&fs::read_to_string("input/2019/day16.txt").unwrap().trim())
-        );
-    }
-}

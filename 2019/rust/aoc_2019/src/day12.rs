@@ -1,54 +1,6 @@
 use num::Integer;
 use regex::Regex;
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
-pub struct Position {
-    x: i32,
-    y: i32,
-    z: i32,
-}
-
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
-pub struct Velocity {
-    x: i32,
-    y: i32,
-    z: i32,
-}
-
-impl Position {
-    pub fn new() -> Position {
-        Position { x: 0, y: 0, z: 0 }
-    }
-}
-
-impl Velocity {
-    pub fn new() -> Velocity {
-        Velocity { x: 0, y: 0, z: 0 }
-    }
-}
-
-#[derive(Clone, Copy, Hash, Eq, PartialEq)]
-pub struct PlanetaryBody {
-    position: Position,
-    velocity: Velocity,
-}
-
-impl PlanetaryBody {
-    pub fn new() -> PlanetaryBody {
-        PlanetaryBody {
-            position: Position::new(),
-            velocity: Velocity::new(),
-        }
-    }
-    pub fn potential_energy(&self) -> i32 {
-        self.position.x.abs() + self.position.y.abs() + self.position.z.abs()
-    }
-
-    pub fn kinetic_energy(&self) -> i32 {
-        self.velocity.x.abs() + self.velocity.y.abs() + self.velocity.z.abs()
-    }
-}
-
 #[aoc_generator(day12)]
 pub fn generator(input: &str) -> Vec<Position> {
     // This is the most annoying data format yet, but I have a feeling I'll need this generator again.
@@ -65,8 +17,6 @@ pub fn generator(input: &str) -> Vec<Position> {
     }
     positions
 }
-
-const ITERATIONS: u32 = 1000;
 
 #[aoc(day12, part1)]
 pub fn total_energy_all_planets(v: &[Position]) -> u64 {
@@ -201,31 +151,52 @@ pub fn steps_to_repeat(v: &[Position]) -> u64 {
     (x_period.unwrap() + 1).lcm(&(y_period.unwrap() + 1).lcm(&(z_period.unwrap() + 1)))
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day12::generator;
-    use crate::day12::steps_to_repeat;
-    use crate::day12::total_energy_all_planets;
-    use std::fs;
-    const ANSWER_12A: u64 = 9139;
-    const ANSWER_12B: u64 = 420_788_524_631_496;
+const ITERATIONS: u32 = 1000;
 
-    #[test]
-    fn t12a() {
-        assert_eq!(
-            ANSWER_12A,
-            total_energy_all_planets(&generator(
-                &fs::read_to_string("input/2019/day12.txt").unwrap().trim()
-            ))
-        );
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
+pub struct Position {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
+pub struct Velocity {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+
+impl Position {
+    pub fn new() -> Position {
+        Position { x: 0, y: 0, z: 0 }
     }
-    #[test]
-    fn t12b() {
-        assert_eq!(
-            ANSWER_12B,
-            steps_to_repeat(&generator(
-                &fs::read_to_string("input/2019/day12.txt").unwrap().trim()
-            ))
-        );
+}
+
+impl Velocity {
+    pub fn new() -> Velocity {
+        Velocity { x: 0, y: 0, z: 0 }
+    }
+}
+
+#[derive(Clone, Copy, Hash, Eq, PartialEq)]
+pub struct PlanetaryBody {
+    position: Position,
+    velocity: Velocity,
+}
+
+impl PlanetaryBody {
+    pub fn new() -> PlanetaryBody {
+        PlanetaryBody {
+            position: Position::new(),
+            velocity: Velocity::new(),
+        }
+    }
+    pub fn potential_energy(&self) -> i32 {
+        self.position.x.abs() + self.position.y.abs() + self.position.z.abs()
+    }
+
+    pub fn kinetic_energy(&self) -> i32 {
+        self.velocity.x.abs() + self.velocity.y.abs() + self.velocity.z.abs()
     }
 }

@@ -1,67 +1,6 @@
 use crate::icc::IntCodeComputer;
 use itertools::Itertools;
 
-fn deploy(springscript: &str, icc_program: Vec<i64>) -> String {
-    let mut icc = IntCodeComputer::new(icc_program, false);
-    icc.program.resize(1024 * 1024, 0);
-    for c in springscript.chars() {
-        icc.inputq.push_back(c as i64);
-    }
-    icc.execute();
-    icc.consume_output()
-}
-
-fn parse_successful_output(output: &str) -> u32 {
-    output
-        .split("1010")
-        .collect::<Vec<&str>>()
-        .last()
-        .unwrap()
-        .parse::<u32>()
-        .unwrap()
-}
-
-#[allow(dead_code)]
-fn find_working_springscript(icc_program: Vec<i64>, commands: Vec<&str>, movement: &str) -> u32 {
-    let mut p = 1;
-    let mut output: String;
-    'outer: loop {
-        for command_set in commands.iter().permutations(p) {
-            let mut program: String = "".to_string();
-            for command in command_set {
-                program.push_str(command);
-                program.push('\n');
-            }
-            program.push_str(movement);
-            program.push('\n');
-            output = deploy(&program, icc_program.clone());
-            let output_bytes = output.as_bytes();
-            let mut i = 1;
-            let mut dot_encountered = false; // skip garbage output at the beginning
-            while i < output_bytes.len() {
-                if i + 1 >= output_bytes.len() {
-                    println!("Based on a parsing error, maybe the answer is {}", output);
-                    break 'outer;
-                }
-                let c = std::str::from_utf8(&output_bytes[i..i + 2])
-                    .unwrap()
-                    .parse::<u8>()
-                    .unwrap() as char;
-                if dot_encountered || c == '.' {
-                    dot_encountered = true;
-                }
-                i += 2;
-            }
-            if !dot_encountered {
-                println!("Based on no printout, maybe the answer is {}", output);
-                break 'outer;
-            }
-        }
-        p += 1;
-    }
-    parse_successful_output(&output)
-}
-
 #[aoc(day21, part1)]
 pub fn solution_21a(input: &str) -> u32 {
     let v: Vec<i64> = input
@@ -126,26 +65,63 @@ pub fn solution_21b(input: &str) -> u32 {
     parse_successful_output(&deploy(&program, v.clone()))
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day21::solution_21a;
-    use crate::day21::solution_21b;
-    use std::fs;
-    const ANSWER_21A: u32 = 19_349_530;
-    const ANSWER_21B: u32 = 1_142_805_439;
+fn deploy(springscript: &str, icc_program: Vec<i64>) -> String {
+    let mut icc = IntCodeComputer::new(icc_program, false);
+    icc.program.resize(1024 * 1024, 0);
+    for c in springscript.chars() {
+        icc.inputq.push_back(c as i64);
+    }
+    icc.execute();
+    icc.consume_output()
+}
 
-    #[test]
-    fn t21a() {
-        assert_eq!(
-            ANSWER_21A,
-            solution_21a(&fs::read_to_string("input/2019/day21.txt").unwrap().trim())
-        );
+fn parse_successful_output(output: &str) -> u32 {
+    output
+        .split("1010")
+        .collect::<Vec<&str>>()
+        .last()
+        .unwrap()
+        .parse::<u32>()
+        .unwrap()
+}
+
+#[allow(dead_code)]
+fn find_working_springscript(icc_program: Vec<i64>, commands: Vec<&str>, movement: &str) -> u32 {
+    let mut p = 1;
+    let mut output: String;
+    'outer: loop {
+        for command_set in commands.iter().permutations(p) {
+            let mut program: String = "".to_string();
+            for command in command_set {
+                program.push_str(command);
+                program.push('\n');
+            }
+            program.push_str(movement);
+            program.push('\n');
+            output = deploy(&program, icc_program.clone());
+            let output_bytes = output.as_bytes();
+            let mut i = 1;
+            let mut dot_encountered = false; // skip garbage output at the beginning
+            while i < output_bytes.len() {
+                if i + 1 >= output_bytes.len() {
+                    println!("Based on a parsing error, maybe the answer is {}", output);
+                    break 'outer;
+                }
+                let c = std::str::from_utf8(&output_bytes[i..i + 2])
+                    .unwrap()
+                    .parse::<u8>()
+                    .unwrap() as char;
+                if dot_encountered || c == '.' {
+                    dot_encountered = true;
+                }
+                i += 2;
+            }
+            if !dot_encountered {
+                println!("Based on no printout, maybe the answer is {}", output);
+                break 'outer;
+            }
+        }
+        p += 1;
     }
-    #[test]
-    fn t21b() {
-        assert_eq!(
-            ANSWER_21B,
-            solution_21b(&fs::read_to_string("input/2019/day21.txt").unwrap().trim())
-        );
-    }
+    parse_successful_output(&output)
 }

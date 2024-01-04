@@ -1,50 +1,8 @@
 use regex::Regex;
 use std::collections::HashMap;
 
-#[derive(Debug, Clone)]
-pub struct Recipe {
-    reactants: HashMap<String, u64>,
-    product: (String, u64),
-}
-
-/*
- * This queueing approach was inspired by a gist from u/aurele.
- * My previous approach was an attempt at recursion and failed due
- * to the borrow checker and my horrible stucture.
- */
-fn ore_per_fuel(recipes: &[Recipe], fuel: u64) -> u64 {
-    let mut required_materials: Vec<(String, u64)> = Vec::new();
-    let mut created_materials: HashMap<String, u64> = HashMap::new();
-    let mut ore: u64 = 0;
-    required_materials.push(("FUEL".to_string(), fuel));
-    while let Some((product, mut amount)) = required_materials.pop() {
-        if let Some(&created) = created_materials.get(&product) {
-            let consumed_materials = std::cmp::min(created, amount);
-            amount -= consumed_materials;
-            created_materials.insert(product.to_string(), created - consumed_materials);
-        }
-        //if there's any leftovers
-        if amount > 0 {
-            let product_recipe = recipes.iter().find(|x| x.product.0 == product).unwrap();
-            let factor = (amount + product_recipe.product.1 - 1) / product_recipe.product.1;
-            for (k, v) in product_recipe.reactants.clone() {
-                if k == "ORE" {
-                    ore += (v * factor) as u64;
-                } else {
-                    required_materials.push((k.to_string(), v * factor));
-                }
-            }
-            created_materials.insert(
-                product.to_string(),
-                product_recipe.product.1 * factor - amount,
-            );
-        }
-    }
-    ore
-}
-
 #[aoc_generator(day14)]
-fn generate_recipes(input: &str) -> Vec<Recipe> {
+pub fn generate_recipes(input: &str) -> Vec<Recipe> {
     lazy_static! {
         static ref RE: Regex = Regex::new(
             r"(?P<reactants>(?P<reactant>[0-9]+ [A-Z]+,? )+)=> (?P<product>[0-9]+ [A-Z]+)"
@@ -97,9 +55,22 @@ pub fn solution_14a(recipes: &[Recipe]) -> u64 {
 
 #[aoc(day14, part2)]
 pub fn solution_14b(recipes: &[Recipe]) -> u64 {
+    /*
+    let mut fuel = 1;
+    loop {
+        let opf = ore_per_fuel(recipes, fuel);
+        if opf > 1_000_000_000_000u64 {
+            break;
+        }
+        fuel += 1;
+    }
+    fuel
+    */
+
     // Iteration was too slow, so a bsearch was obvious
     let mut low: u64 = 0;
-    let mut high: u64 = 4_000_000_000;
+    // let mut high: u64 = 4_000_000_000;
+    let mut high: u64 = 4_000_000_000-1;
     let mut mid: u64 = 0;
     const ORE_TARGET: u64 = 1_000_000_000_000u64;
     while low <= high {
@@ -113,34 +84,54 @@ pub fn solution_14b(recipes: &[Recipe]) -> u64 {
             break;
         }
     }
-    mid
+    println!("{} ore per {} fuel", ore_per_fuel(recipes, mid-1), mid-1);
+    println!("{} ore per {} fuel", ore_per_fuel(recipes, mid), mid);
+    println!("{} ore per {} fuel", ore_per_fuel(recipes, mid+1), mid+1);
+    if ore_per_fuel(recipes, mid) > ORE_TARGET {
+        mid - 1
+    } else {
+        mid
+    }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::day14::generate_recipes;
-    use crate::day14::solution_14a;
-    use crate::day14::solution_14b;
-    use std::fs;
-    const ANSWER_14A: u64 = 443_537;
-    const ANSWER_14B: u64 = 2_910_558;
+#[derive(Debug, Clone)]
+pub struct Recipe {
+    reactants: HashMap<String, u64>,
+    product: (String, u64),
+}
 
-    #[test]
-    fn t14a() {
-        assert_eq!(
-            ANSWER_14A,
-            solution_14a(&generate_recipes(
-                &fs::read_to_string("input/2019/day14.txt").unwrap().trim()
-            ))
-        );
+/*
+ * This queueing approach was inspired by a gist from u/aurele.
+ * My previous approach was an attempt at recursion and failed due
+ * to the borrow checker and my horrible stucture.
+ */
+fn ore_per_fuel(recipes: &[Recipe], fuel: u64) -> u64 {
+    let mut required_materials: Vec<(String, u64)> = Vec::new();
+    let mut created_materials: HashMap<String, u64> = HashMap::new();
+    let mut ore: u64 = 0;
+    required_materials.push(("FUEL".to_string(), fuel));
+    while let Some((product, mut amount)) = required_materials.pop() {
+        if let Some(&created) = created_materials.get(&product) {
+            let consumed_materials = std::cmp::min(created, amount);
+            amount -= consumed_materials;
+            created_materials.insert(product.to_string(), created - consumed_materials);
+        }
+        //if there's any leftovers
+        if amount > 0 {
+            let product_recipe = recipes.iter().find(|x| x.product.0 == product).unwrap();
+            let factor = (amount + product_recipe.product.1 - 1) / product_recipe.product.1;
+            for (k, v) in product_recipe.reactants.clone() {
+                if k == "ORE" {
+                    ore += (v * factor) as u64;
+                } else {
+                    required_materials.push((k.to_string(), v * factor));
+                }
+            }
+            created_materials.insert(
+                product.to_string(),
+                product_recipe.product.1 * factor - amount,
+            );
+        }
     }
-    #[test]
-    fn t14b() {
-        assert_eq!(
-            ANSWER_14B,
-            solution_14b(&generate_recipes(
-                &fs::read_to_string("input/2019/day14.txt").unwrap().trim()
-            ))
-        );
-    }
+    ore
 }

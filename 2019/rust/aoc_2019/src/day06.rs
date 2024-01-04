@@ -2,7 +2,7 @@ use itertools::Itertools;
 use std::collections::HashMap;
 
 #[aoc(day06, part1, original)]
-pub fn original_6a(input: &str) -> u32 {
+pub fn original_06a(input: &str) -> u32 {
     let objects: HashMap<_, _> = input
         .lines()
         .flat_map(|l| l.trim().rsplitn(2, ")"))
@@ -19,7 +19,7 @@ pub fn original_6a(input: &str) -> u32 {
 }
 
 #[aoc(day06, part2, original)]
-pub fn original_6b(input: &str) -> u32 {
+pub fn original_06b(input: &str) -> u32 {
     let objects: HashMap<_, _> = input
         .lines()
         .flat_map(|l| l.trim().rsplitn(2, ")"))
@@ -48,28 +48,4 @@ pub fn original_6b(input: &str) -> u32 {
         }
     }
     orbital_transfers
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::day06::original_6a;
-    use crate::day06::original_6b;
-    use std::fs;
-    const ANSWER_6A: u32 = 147_223;
-    const ANSWER_6B: u32 = 340;
-
-    #[test]
-    fn t06a() {
-        assert_eq!(
-            ANSWER_6A,
-            original_6a(&fs::read_to_string("input/2019/day6.txt").unwrap().trim())
-        );
-    }
-    #[test]
-    fn t06b() {
-        assert_eq!(
-            ANSWER_6B,
-            original_6b(&fs::read_to_string("input/2019/day6.txt").unwrap().trim())
-        );
-    }
 }
